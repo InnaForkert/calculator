@@ -1,19 +1,19 @@
 import { StyledButton } from "./Button.styled";
 
 function Button({
-  text,
-  width,
-  height,
+ text,
+ span,
+ height = 1,
 }: {
-  text: string;
-  width: string;
-  height: string;
+ text: string;
+ span: number;
+ height?: number;
 }) {
-  return (
-    <StyledButton buttonWidth={width} buttonHeight={height}>
-      {text}
-    </StyledButton>
-  );
+ return (
+  <StyledButton span={span} buttonHeight={height}>
+   {text}
+  </StyledButton>
+ );
 }
 
 export default Button;
