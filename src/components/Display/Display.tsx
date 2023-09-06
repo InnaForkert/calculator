@@ -1,7 +1,7 @@
 import { DisplayContainer } from "./Display.styled";
 
-function Display() {
- return <DisplayContainer>Hi</DisplayContainer>;
+function Display({ result }: { result: string }) {
+ return <DisplayContainer>{result}</DisplayContainer>;
 }
 
 export default Display;
