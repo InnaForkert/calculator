@@ -27,60 +27,71 @@ function Buttons({
   { text: ".", span: 1 },
  ];
 
- const [action, setAction] = useState("");
- const [number, setNumber] = useState("0");
- const [prevNumber, setPrevNumber] = useState("0");
- const [prevNumberSet, setPrevNumberSet] = useState(false);
-
- function calculateValue() {
-  let res = "0";
-  if (action === "+") {
-   res = String(+prevNumber + +number);
-  }
-  if (action === "/") {
-   res = String(+prevNumber / +number);
-  }
-  if (action === "-") {
-   res = String(+prevNumber - +number);
-  }
-  if (action === "*") {
-   res = String(+prevNumber * +number);
-  }
-  setPrevNumber(res?.toString());
-  setResult(res.toString());
- }
-
- function handleClickBtn(val: string) {
-  if (val === "AC") {
-   setResult("0");
-   return;
-  }
-
-  if (["/", "+", "x", "-"].includes(val)) {
-   setAction(val);
-   if (!prevNumberSet) {
-    setPrevNumberSet(true);
-   }
-   return;
-  }
-
-  if (typeof +val === "number") {
-   if (!prevNumberSet) {
-    setPrevNumber((prev) => prev + val);
-    return;
-   }
-   setNumber((prev: string) => prev + val);
-   return;
-  }
-
-  if (val === "=") {
-   calculateValue();
-  }
- }
+ const [history, setHistory] = useState<string[]>([]);
+ const [isFinal, setIsFinal] = useState(false);
+ const [isAction, setIsAction] = useState(false);
 
  useEffect(() => {
-  setResult(prevNumber);
- }, [prevNumber, setResult]);
+  console.log("history", history);
+ }, [history]);
+
+ useEffect(() => {
+  setResult(history[history.length - 1]);
+ }, [history, setResult]);
+
+ function calculateValue(action: string) {
+  if (action === "AC") {
+   setHistory(["0"]);
+   setResult("0");
+   setIsFinal(true);
+   return;
+  }
+
+  if (!isNaN(parseInt(action))) {
+   if (isFinal) {
+    setHistory([action]);
+    setIsFinal(false);
+    return;
+   }
+
+   if (isAction) {
+    
+   }
+
+   if (!isFinal) {
+    setHistory((prev) => [
+     ...prev.slice(0, history.length - 1),
+     String(history[history.length - 1]) + action,
+    ]);
+   } else {
+   }
+  }
+
+  if (action === "+") {
+   setHistory((prev) => [
+    ...prev,
+    String(+history[history.length - 1] + +history[history.length - 2]),
+   ]);
+  }
+  if (action === "/") {
+   setHistory((prev) => [
+    ...prev,
+    String(+history[history.length - 1] / +history[history.length - 2]),
+   ]);
+  }
+  if (action === "-") {
+   setHistory((prev) => [
+    ...prev,
+    String(+history[history.length - 1] - +history[history.length - 2]),
+   ]);
+  }
+  if (action === "*") {
+   setHistory((prev) => [
+    ...prev,
+    String(+history[history.length - 1] * +history[history.length - 2]),
+   ]);
+  }
+ }
 
  return (
   <ButtonsGrid>
@@ -90,7 +101,7 @@ function Buttons({
      key={el.text}
      span={el.span}
      height={el.height}
-     onClick={handleClickBtn}
+     onClick={() => calculateValue(el.text)}
     />
    ))}
   </ButtonsGrid>
