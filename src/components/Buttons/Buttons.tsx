@@ -54,7 +54,7 @@ function Buttons({
    return;
   }
 
-  if (!isNaN(parseInt(btn))) {
+  if (!isNaN(Number(btn)) || btn === ".") {
    if (isFinal) {
     setHistory([btn]);
     setIsFinal(false);
