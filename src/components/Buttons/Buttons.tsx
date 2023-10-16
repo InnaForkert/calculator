@@ -27,9 +27,10 @@ function Buttons({
   { text: ".", span: 1 },
  ];
 
- const [history, setHistory] = useState<string[]>([]);
+ const [history, setHistory] = useState<string[]>(["0"]);
  const [isFinal, setIsFinal] = useState(false);
- const [isAction, setIsAction] = useState(false);
+ const [action, setAction] = useState("");
+ const [actionHandled, setActionHandled] = useState(true);
 
  useEffect(() => {
   console.log("history", history);
@@ -39,34 +40,48 @@ function Buttons({
   setResult(history[history.length - 1]);
  }, [history, setResult]);
 
- function calculateValue(action: string) {
-  if (action === "AC") {
-   setHistory(["0"]);
-   setResult("0");
-   setIsFinal(true);
+ function reset() {
+  setHistory(["0"]);
+  setResult("0");
+  setIsFinal(true);
+  setAction("");
+  setActionHandled(true);
+ }
+
+ function calculateValue(btn: string) {
+  if (btn === "AC") {
+   reset();
    return;
   }
 
-  if (!isNaN(parseInt(action))) {
+  if (!isNaN(parseInt(btn))) {
    if (isFinal) {
-    setHistory([action]);
+    setHistory([btn]);
     setIsFinal(false);
     return;
    }
 
-   if (isAction) {
-    
-   }
-
-   if (!isFinal) {
+   if (actionHandled) {
     setHistory((prev) => [
      ...prev.slice(0, history.length - 1),
-     String(history[history.length - 1]) + action,
+     String(history[history.length - 1]) + btn,
     ]);
-   } else {
+    return;
    }
+
+   setHistory((prev) => [...prev, btn]);
+   setActionHandled(true);
+   return;
   }
 
+  if (["+", "/", "-", "x", "="].includes(btn)) {
+   handleAction(btn);
+   setActionHandled(false);
+   return;
+  }
+ }
+
+ function handleAction(btn: string) {
   if (action === "+") {
    setHistory((prev) => [
     ...prev,
@@ -76,21 +91,26 @@ function Buttons({
   if (action === "/") {
    setHistory((prev) => [
     ...prev,
-    String(+history[history.length - 1] / +history[history.length - 2]),
+    String(+history[history.length - 2] / +history[history.length - 1]),
    ]);
   }
   if (action === "-") {
    setHistory((prev) => [
     ...prev,
-    String(+history[history.length - 1] - +history[history.length - 2]),
+    String(+history[history.length - 2] - +history[history.length - 1]),
    ]);
   }
-  if (action === "*") {
+  if (action === "x") {
    setHistory((prev) => [
     ...prev,
     String(+history[history.length - 1] * +history[history.length - 2]),
    ]);
   }
+  if (btn === "=") {
+   setAction("");
+   return;
+  }
+  setAction(btn);
  }
 
  return (
